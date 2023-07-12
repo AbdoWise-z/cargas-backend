@@ -131,6 +131,7 @@ public class MongoBase implements Database {
         Document trans = ActiveLoginsDB.find(new Document("token" , token)).first();
         if (trans == null)
             return PROFILE_UPDATE_FAILED;
+
         String user = trans.getString("username");
         AccountsDB.updateOne(new Document("username" , user) ,
                 new Document()
