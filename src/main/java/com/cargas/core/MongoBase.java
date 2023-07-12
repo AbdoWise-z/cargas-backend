@@ -214,7 +214,7 @@ public class MongoBase implements Database {
         PendingRequestsDB.insertOne(new Document("username" , userName)
                 .append("code" , code)
                 .append("items" , docs)
-                .append("statues" , ORDER_STATE_WAITING)
+                .append("status" , ORDER_STATE_WAITING)
                 .append("processor" , "none")
                 .append("time" , LocalDateTime.now().toString())
         );
