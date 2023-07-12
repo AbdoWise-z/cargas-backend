@@ -4,8 +4,12 @@ import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
 import com.mongodb.client.*;
+import com.mongodb.client.model.Updates;
 import org.bson.Document;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.mongodb.core.aggregation.SetOperation;
+import org.springframework.data.mongodb.core.aggregation.SetOperators;
+import org.springframework.data.mongodb.core.query.Update;
 
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
@@ -133,11 +137,13 @@ public class MongoBase implements Database {
             return PROFILE_UPDATE_FAILED;
 
         String user = trans.getString("username");
+
         AccountsDB.updateOne(new Document("username" , user) ,
-                new Document()
-                        .append("name" , name)
-                        .append("phone" , phone_number)
-                        .append("address" , address));
+                Updates.combine(
+                        Updates.set("name" , name),
+                        Updates.set("phone" , phone_number),
+                        Updates.set("address" , address)));
+
         return PROFILE_UPDATE_SUCCESS;
     }
 
@@ -176,6 +182,9 @@ public class MongoBase implements Database {
 
     @Override
     public String order(String token, List<ShopRequest> items) {
+        if (items.size() == 0)
+            return null;
+
         Document trans = ActiveLoginsDB.find(new Document("token" , token)).first();
         if (trans == null)
             return null;
@@ -249,7 +258,7 @@ public class MongoBase implements Database {
             return ORDER_FAILED;
         String userName = trans.getString("username");
 
-        Document doc = PendingRequestsDB.findOneAndDelete(new Document("requestCode" , order).append("username" , userName));
+        Document doc = PendingRequestsDB.findOneAndDelete(new Document("code" , order).append("username" , userName));
 
         return doc == null ? ORDER_FAILED : ORDER_SUCCESS;
     }

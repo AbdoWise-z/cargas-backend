@@ -13,7 +13,7 @@ import java.util.Map;
 @RestController
 public class UpdateRequest {
     @PostMapping(value = "/profile_update")
-    public String doRegister(@RequestParam Map<String,String> params , @RequestBody String body){
+    public String doUpdate(@RequestParam Map<String,String> params , @RequestBody String body){
         try {
             Document doc = Document.parse(body);
 
@@ -43,6 +43,7 @@ public class UpdateRequest {
             )).toJson();
 
         }catch (Exception e){
+            e.printStackTrace();
             return new Document(Map.of(
                     "result" , -1,
                     "error" , "bad request"
