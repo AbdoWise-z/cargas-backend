@@ -22,8 +22,9 @@ public class RegisterRequest {
             String name         = doc.getString("name");
             String phone_number = doc.getString("phone_number");
             String address      = doc.getString("address");
+            String email        = doc.getString("email");
 
-            if (username == null || pass == null || name == null || phone_number == null || address == null){
+            if (username == null || pass == null || name == null || phone_number == null || address == null || email == null){
                 return new Document(Map.of(
                         "result" , Database.REGISTER_INVALID_DATA,
                         "error" , "invalid data"
@@ -35,9 +36,9 @@ public class RegisterRequest {
                     pass,
                     name,
                     phone_number,
-                    address
+                    address,
+                    email
             );
-
 
             return new Document(Map.of(
                     "result" , res

@@ -9,6 +9,8 @@ import org.slf4j.LoggerFactory;
 
 import java.security.SecureRandom;
 import java.util.Base64;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Objects;
 
 public class MongoBase implements Database {
@@ -19,6 +21,7 @@ public class MongoBase implements Database {
     private MongoCollection<Document> LoginsDB;
     private MongoCollection<Document> ActiveLoginsDB;
     private MongoCollection<Document> AccountsDB;
+    private MongoCollection<Document> ShopDB;
 
     @Override
     public void init() {
@@ -38,6 +41,7 @@ public class MongoBase implements Database {
         LoginsDB         = base.getCollection(Constants.MONGO_LOGIN_DB);
         ActiveLoginsDB   = base.getCollection(Constants.MONGO_ACTIVE_LOGINS_DB);
         AccountsDB       = base.getCollection(Constants.MONGO_ACCOUNTS_DB);
+        ShopDB           = base.getCollection(Constants.MONGO_SHOP_DB);
     }
 
 
@@ -72,12 +76,12 @@ public class MongoBase implements Database {
     }
 
     @Override
-    public int register(String username, String password, String name, String phone_number, String address) {
-        username = username.trim();
-        password = password.trim();
-        name = name.trim();
-        phone_number = phone_number.trim();
-        address = address.trim();
+    public int register(String username, String password, String name, String phone_number, String address , String email) {
+        username      = username.trim();
+        password      = password.trim();
+        name          = name.trim();
+        phone_number  = phone_number.trim();
+        address       = address.trim();
 
         if (username.length() < 8){
             return REGISTER_INVALID_USER;
@@ -87,7 +91,7 @@ public class MongoBase implements Database {
             return REGISTER_INVALID_PASSWORD;
         }
 
-        if (name.isEmpty() || phone_number.isEmpty() || address.isEmpty()){
+        if (name.isEmpty() || phone_number.isEmpty() || address.isEmpty() || email.isEmpty()){
             return REGISTER_INVALID_DATA;
         }
 
@@ -101,9 +105,44 @@ public class MongoBase implements Database {
                 .append("name" , name)
                 .append("phone" , phone_number)
                 .append("address" , address)
+                .append("email" , email)
+                .append("type" , 0)
                 .append("balance" , 0.0)
         );
 
         return REGISTER_SUCCESS;
+    }
+
+    @Override
+    public int logout(String token) {
+        return ActiveLoginsDB.findOneAndDelete(new Document("token" , token)) != null ? LOGOUT_SUCCESS : LOGOUT_FAILED;
+    }
+
+    @Override
+    public String getInfo(String token) {
+        Document trans = ActiveLoginsDB.find(new Document("token" , token)).first();
+        if (trans == null)
+            return null;
+        Document doc = AccountsDB.find(new Document("username" , trans.getString("username"))).first();
+        if (doc == null){
+            throw new RuntimeException("Somehow I have active login with invalid username : " + token);
+        }
+
+        doc.remove("_id");
+
+        return doc.toJson();
+    }
+
+    @Override
+    public List<String> getShop(String token) {
+        FindIterable<Document> docs =  ShopDB.find();
+        List<String> items = new LinkedList<>();
+
+        for (Document d : docs){
+            d.remove("_id");
+            items.add(d.toJson());
+        }
+
+        return items;
     }
 }

@@ -7,4 +7,6 @@ public class Constants {
     public static final String MONGO_LOGIN_DB = "logins";
     public static final String MONGO_ACCOUNTS_DB = "accounts";
     public static final String MONGO_ACTIVE_LOGINS_DB = "active-logins";
+    public static final String MONGO_SHOP_DB          = "Shop";
+
 }

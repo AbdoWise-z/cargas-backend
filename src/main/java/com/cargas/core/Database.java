@@ -1,5 +1,7 @@
 package com.cargas.core;
 
+import java.util.List;
+
 public interface Database {
 
     void init();
@@ -13,6 +15,13 @@ public interface Database {
     int REGISTER_INVALID_PASSWORD = 2;
     int REGISTER_INVALID_DATA = 4;
 
-    int register(String username , String password , String name , String phone_number , String address);
+    int register(String username , String password , String name , String phone_number , String address , String email);
 
+    int LOGOUT_SUCCESS = 0;
+    int LOGOUT_FAILED = 1;
+    int logout(String token);
+
+    String getInfo(String token);
+
+    List<String> getShop(String token);
 }
