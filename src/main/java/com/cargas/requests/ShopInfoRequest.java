@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Map;
 
 @RestController
-public class ShopRequest {
+public class ShopInfoRequest {
 
     @GetMapping(value = "/shop")
     String getShop(@RequestParam Map<String , String> params){

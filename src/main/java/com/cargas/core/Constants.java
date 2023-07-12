@@ -8,5 +8,8 @@ public class Constants {
     public static final String MONGO_ACCOUNTS_DB = "accounts";
     public static final String MONGO_ACTIVE_LOGINS_DB = "active-logins";
     public static final String MONGO_SHOP_DB          = "Shop";
+    public static final String MONGO_PENDING_REQUESTS_DB          = "pending-requests";
+    public static final String MONGO_FINISHED_REQUESTS_DB          = "requests-log";
+
 
 }
